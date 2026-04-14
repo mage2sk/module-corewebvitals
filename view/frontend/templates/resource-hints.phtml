@@ -1,0 +1,33 @@
+<?php
+/**
+ * Copyright © Panth Infotech. All rights reserved.
+ *
+ * @var \Panth\CoreWebVitals\Block\ResourceHints $block
+ */
+
+if (!$block->isEnabled()) {
+    return;
+}
+
+$dnsPrefetch = $block->getDnsPrefetchDomains();
+$preconnect = $block->getPreconnectDomains();
+$prefetch = $block->getPrefetchUrls();
+?>
+
+<?php if (!empty($dnsPrefetch) || !empty($preconnect) || !empty($prefetch)): ?>
+
+<!-- DNS Prefetch -->
+<?php foreach ($dnsPrefetch as $domain): ?>
+<link rel="dns-prefetch" href="//<?= $block->escapeHtmlAttr($domain) ?>">
+<?php endforeach; ?>
+
+<!-- Preconnect -->
+<?php foreach ($preconnect as $domain): ?>
+<link rel="preconnect" href="//<?= $block->escapeHtmlAttr($domain) ?>" crossorigin>
+<?php endforeach; ?>
+
+<!-- Prefetch -->
+<?php foreach ($prefetch as $url): ?>
+<link rel="prefetch" href="<?= $block->escapeUrl($url) ?>">
+<?php endforeach; ?>
+<?php endif; ?>
