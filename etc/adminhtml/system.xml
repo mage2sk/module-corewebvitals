@@ -36,9 +36,26 @@
                 <field id="real_user_monitoring" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Send Metrics to Analytics</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[When enabled, automatically sends collected metrics to Google Analytics 4 (if <code>gtag</code> is present) or to a custom endpoint set via <code>window.panthCoreWebVitalsEndpoint</code> using <code>navigator.sendBeacon</code>.]]></comment>
+                    <comment><![CDATA[When enabled, collected metrics are sent to Google Analytics 4 (when <code>gtag</code> is on the page) and/or to the custom beacon URL below using <code>navigator.sendBeacon</code>.]]></comment>
                     <depends>
                         <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="endpoint_url" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Custom Beacon Endpoint URL</label>
+                    <validate>validate-url</validate>
+                    <comment><![CDATA[Absolute URL that receives a JSON body via <code>navigator.sendBeacon</code> for every collected metric (LCP, FID, INP, CLS). Leave blank to skip the beacon send. The receiving endpoint MUST accept POST with <code>Content-Type: application/json</code> and respond with 2xx.]]></comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="real_user_monitoring">1</field>
+                    </depends>
+                </field>
+                <field id="ga4_measurement_id" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>GA4 Measurement ID</label>
+                    <comment><![CDATA[Optional. Format <code>G-XXXXXXX</code>. Used as the <code>send_to</code> target in <code>gtag('event', 'web_vitals', {...})</code> so metrics are routed to the right GA4 property even when the page also reports to a different default property. Leave blank to use the default <code>gtag</code> destination.]]></comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="real_user_monitoring">1</field>
                     </depends>
                 </field>
             </group>

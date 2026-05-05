@@ -71,27 +71,47 @@ $config = $block->getConfigJson();
     }
 
     /**
-     * Send a metric to analytics when RUM is enabled
+     * Send a metric to analytics when RUM is enabled. Two channels, either
+     * or both may fire depending on admin config:
+     *   1. Google Analytics 4 via gtag(). When ga4Id is set we route the
+     *      event explicitly to that property via send_to.
+     *   2. Custom beacon endpoint via navigator.sendBeacon (POST JSON).
      */
     function report(metric) {
         if (!cfg.rum) return;
 
-        // Google Analytics 4
         if (window.gtag) {
-            gtag('event', metric.name, {
+            var params = {
                 event_category: 'Web Vitals',
                 value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
                 event_label: metric.id,
+                metric_rating: metric.rating,
                 non_interaction: true
-            });
+            };
+            if (cfg.ga4Id) {
+                params.send_to = cfg.ga4Id;
+            }
+            gtag('event', metric.name, params);
         }
 
-        // Custom beacon endpoint
-        if (window.panthCoreWebVitalsEndpoint) {
-            navigator.sendBeacon(
-                window.panthCoreWebVitalsEndpoint,
-                JSON.stringify(metric)
-            );
+        // Admin-configured endpoint takes precedence; fall back to a
+        // window-global hook for sites that prefer to wire the URL in JS.
+        var beaconUrl = cfg.endpointUrl || window.panthCoreWebVitalsEndpoint;
+        if (beaconUrl && navigator.sendBeacon) {
+            try {
+                var blob = new Blob([JSON.stringify({
+                    name: metric.name,
+                    value: metric.value,
+                    rating: metric.rating,
+                    id: metric.id,
+                    delta: metric.delta,
+                    page: location.pathname + location.search,
+                    timestamp: Date.now()
+                })], { type: 'application/json' });
+                navigator.sendBeacon(beaconUrl, blob);
+            } catch (e) {
+                log('beacon error', e.message);
+            }
         }
     }
 
@@ -101,6 +121,7 @@ $config = $block->getConfigJson();
     function handle(metric) {
         var key = metric.name.toLowerCase();
         var rating = rate(key, metric.value);
+        metric.rating = rating;
 
         metrics[key] = {
             value: metric.value,

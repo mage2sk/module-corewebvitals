@@ -12,6 +12,8 @@
                 <enabled>0</enabled>
                 <debug_mode>0</debug_mode>
                 <real_user_monitoring>1</real_user_monitoring>
+                <endpoint_url></endpoint_url>
+                <ga4_measurement_id></ga4_measurement_id>
             </general>
             <lcp>
                 <enabled>1</enabled>

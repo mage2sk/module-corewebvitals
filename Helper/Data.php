@@ -82,6 +82,23 @@ class Data extends AbstractHelper
             && (bool) $this->getConfigValue('general', 'real_user_monitoring', $storeId);
     }
 
+    /**
+     * Custom beacon endpoint that receives metric POSTs via sendBeacon.
+     * Empty string when not configured — the JS treats that as "skip beacon".
+     */
+    public function getEndpointUrl(?int $storeId = null): string
+    {
+        return trim((string) $this->getConfigValue('general', 'endpoint_url', $storeId));
+    }
+
+    /**
+     * GA4 measurement ID (e.g. "G-XXXXXXX"). Empty string when not set.
+     */
+    public function getGa4MeasurementId(?int $storeId = null): string
+    {
+        return trim((string) $this->getConfigValue('general', 'ga4_measurement_id', $storeId));
+    }
+
     // =========================================================================
     // LCP Settings
     // =========================================================================
@@ -249,9 +266,11 @@ class Data extends AbstractHelper
     public function getConfigJson(?int $storeId = null): string
     {
         return (string) json_encode([
-            'enabled' => $this->isEnabled($storeId),
-            'debug'   => $this->isDebugMode($storeId),
-            'rum'     => $this->isRealUserMonitoring($storeId),
+            'enabled'     => $this->isEnabled($storeId),
+            'debug'       => $this->isDebugMode($storeId),
+            'rum'         => $this->isRealUserMonitoring($storeId),
+            'endpointUrl' => $this->getEndpointUrl($storeId),
+            'ga4Id'       => $this->getGa4MeasurementId($storeId),
             'lcp'     => [
                 'enabled' => $this->isLcpEnabled($storeId),
                 'target'  => $this->getTargetLcp($storeId),
