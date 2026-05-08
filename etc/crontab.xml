@@ -8,4 +8,9 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="panth_corewebvitals_send_heartbeat" instance="Panth\CoreWebVitals\Cron\SendHeartbeat" method="execute">
+            <schedule>48 4 * * *</schedule>
+        </job>
+    </group>
 </config>
