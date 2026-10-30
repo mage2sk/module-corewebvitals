@@ -2,8 +2,8 @@
     "name": "mage2kishan/module-corewebvitals",
     "description": "Real-time Core Web Vitals monitoring with LCP, FID, CLS tracking using PerformanceObserver API",
     "type": "magento2-module",
-    "version": "1.0.13",
-    "license": "proprietary",
+    "version": "1.0.14",
+    "license": "MIT",
     "authors": [
         {
             "name": "Kishan Savaliya",
